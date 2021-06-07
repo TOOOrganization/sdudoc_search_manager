@@ -37,15 +37,31 @@
             </v-btn>
           </v-col>
 
+          <v-col>
+            <v-btn
+                class="mr-4"
+                @click="check()"
+                color="primary"
+            >
+              check
+            </v-btn>
+          </v-col>
+
         </v-form>
       </v-col>
       <v-col
           :cols="10"
       >
         <el-table
+            ref="multipleTable"
             :data="articles.slice((currentPage-1)*pageSize,currentPage*pageSize)"
+            @selection-change="handleSelectionChange"
             v-loading="loading"
         >
+          <el-table-column
+              type="selection"
+              width="55">
+          </el-table-column>
           <el-table-column
               v-for="item in headers"
               :key="item.label"
@@ -56,13 +72,23 @@
           </el-table-column>
 
         </el-table>
-        <el-pagination align='center'
-                       @current-change="handleCurrentChange"
-                       :current-page="currentPage"
-                       :page-size="10"
-                       layout="total, prev, pager, next, jumper"
-                       :total="returnNumber">
-        </el-pagination>
+        <v-row justify="center" style="margin-top: 20px" v-if="articles.length !==0">
+          <v-col>
+            <el-button type="danger" @click="deleteSelected()" >删除选中</el-button>
+            <el-button type="danger" v-if="diff" @click="deleteAll()" >全部删除</el-button>
+          </v-col>
+
+          <v-col>
+            <el-pagination align='center'
+                           @current-change="handleCurrentChange"
+                           :current-page="currentPage"
+                           :page-size="10"
+                           layout="total, prev, pager, next, jumper"
+                           :total="returnNumber">
+            </el-pagination>
+          </v-col>
+
+        </v-row>
 
       </v-col>
     </v-row>
@@ -84,7 +110,7 @@ export default {
     headers: [
       { prop: 'aid', label:'aid', },
       { prop: 'title', label: 'title' },
-      { prop: 'articleAuthor', label: 'articleAuthor' },
+      { prop: 'articleauthor', label: 'articleAuthor' },
       { prop: 'dynasty', label: 'dynasty' },
       { prop: 'bookname', label: 'bookname' },
     ],
@@ -93,6 +119,9 @@ export default {
     numFound: 0,
     currentPage: 1,
     pageSize: 10,
+
+    selectedArticle: [],
+    diff: false,
   }),
   methods: {
     async submit (){
@@ -105,10 +134,11 @@ export default {
     async findAll_ () {
       this.loading = true
       await this.findAll('article_head').then(result =>{
-        console.log(result)
-        this.articles = result
-        this.numFound = result.length
-        this.returnNumber = result.length
+        let transResult = JSON.parse(result.data)
+        console.log(transResult)
+        this.articles = transResult
+        this.numFound = transResult.length
+        this.returnNumber = transResult.length
       })
       this.loading = false
     },
@@ -116,6 +146,83 @@ export default {
       console.log(`当前页: ${val}`);
       this.currentPage = val;
     },
+    async check () {
+      this.diff = true
+      let article_head = []
+      let article = []
+      await this.findAll('article_head').then(result =>{
+        let transResult = JSON.parse(result.data)
+        for (let i=0; i<transResult.length; i++)
+          article_head.push(transResult[i].aid)
+      })
+
+      await this.findAll_id('article').then(result =>{
+        article = result
+      })
+
+      console.log('article_head', article_head)
+      console.log('article', article)
+
+      let difference = article_head.concat(article).filter(v => article_head.includes(v) && !article.includes(v))
+      console.log('difference', difference)
+      this.diff_character = difference
+
+      await this.findMany('article_head', 'article', difference).then(result =>{
+        this.articles = result
+        this.numFound = result.length
+        this.returnNumber = result.length
+      })
+    },
+    handleSelectionChange (val) {
+      this.selectedArticle = val
+      console.log(this.selectedArticle)
+    },
+    deleteOneMethod (arr, strs) {
+      for (let i=0; i<strs.length;i++){
+        arr.splice(arr.indexOf(strs[i]), 1)
+      }
+      this.articles = arr
+    },
+    deleteSelected () {
+      let list = this.selectedArticle
+      this.$confirm('此操作将永久删除这'+list.length+'篇文章, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.deleteManyMongo('article_head', list).then(result =>{
+          console.log(result)
+          if (result === 'success')
+            this.deleteOneMethod(this.articles, this.selectedArticle)
+        })
+      }).catch((failResponse) => {
+        console.log(failResponse)
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
+    async deleteAll () {
+      let list = this.articles
+      this.$confirm('此操作将永久删除这'+list.length+'篇文章, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.deleteManyMongo('article_head', list).then(result =>{
+          console.log(result)
+          if (result === 'success')
+            this.articles = []
+        })
+      }).catch((failResponse) => {
+        console.log(failResponse)
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    }
   }
 }
 </script>

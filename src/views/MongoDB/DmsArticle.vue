@@ -99,6 +99,37 @@
 
       </v-col>
     </v-row>
+    <v-row justify="center">
+      <v-dialog
+          v-model="deleteOneDialog"
+          persistent
+          max-width="290"
+      >
+        <v-card>
+          <v-card-title class="headline">
+            删除确认
+          </v-card-title>
+          <v-card-text>您确认要删除_id为{{deleteOne.row._id}}的文章吗？</v-card-text>
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn
+                color="primary"
+                text
+                @click="deleteOneDialog = false"
+            >
+              取消
+            </v-btn>
+            <v-btn
+                color="red"
+                text
+                @click="deleteOneDialog = false; deleteARow(deleteOne.index, deleteOne.row)"
+            >
+              删除
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </v-row>
   </v-container>
 </template>
 
@@ -130,6 +161,11 @@ export default {
     pageSize: 10,
 
     selectedArticle:[],
+
+    deleteOne: {
+      index: '',
+      row:'',
+    },
   }),
   methods: {
     async submit (){
@@ -166,7 +202,7 @@ export default {
     },
     async deleteARow(index, row){
       console.log(index)
-      console.log(row.id)
+      console.log(row._id)
       await this.deleteRowMongo('article', row).then(result =>{
         console.log(result)
         if (result === 'success')

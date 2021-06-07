@@ -151,6 +151,7 @@ export default {
       let character = []
       let article = []
       await this.getSolrGroupData('dms_character', '', '', '', '','', 'article', 'article').then(result =>{
+        console.log(result)
         character = result
       })
 

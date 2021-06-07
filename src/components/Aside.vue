@@ -5,7 +5,7 @@
   >
     <v-navigation-drawer>
       <v-list-item>
-        <v-list-item-content>
+        <v-list-item-content style="-webkit-user-select:none">
           <v-list-item-title class="title">
             SDUDOC后台管理
           </v-list-item-title>
@@ -31,6 +31,39 @@
           </v-list-item-icon>
           <v-list-item-title>{{item.title}}</v-list-item-title>
         </v-list-item>
+        <v-list-group
+            prepend-icon="mdi-account-circle"
+        >
+          <template v-slot:activator>
+            <v-list-item-content>
+              <v-list-item-title>User Manage</v-list-item-title>
+            </v-list-item-content>
+          </template>
+
+          <v-list-group
+              v-for="item in userItems"
+              :key="item.title"
+              no-action
+              sub-group
+          >
+            <template v-slot:activator>
+              <v-list-item-content>
+                <v-list-item-title v-text="item.title"></v-list-item-title>
+              </v-list-item-content>
+            </template>
+
+            <v-list-item
+                v-for="child in item.items"
+                :key="child.title"
+                :to="child.href"
+            >
+              <v-list-item-content>
+                <v-list-item-title v-text="child.title"></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-group>
+
+        </v-list-group>
         <v-list-group
             prepend-icon="mdi-database"
         >
@@ -79,15 +112,33 @@ export default {
         icon: 'mdi-home',
         href: '/'
       },
+      // {
+      //   title: 'User Management',
+      //   icon: 'mdi-account-circle',
+      //   href: '/User'
+      // },
+      // {
+      //   title: 'Article Management',
+      //   icon: 'mdi-book',
+      //   href: '/Article'
+      // }
+    ],
+    userItems: [
       {
-        title: 'User Management',
-        icon: 'mdi-account-circle',
-        href: '/User'
+        title: 'Editor',
+        items: [
+          {title:'ums_user', href: '/User/Editor/UmsUser'},
+          {title:'ums_role', href: '/User/Editor/UmsRight'},
+          {title:'ums_right', href: '/User/Editor/UmsRole'}
+        ]
       },
       {
-        title: 'Article Management',
-        icon: 'mdi-book',
-        href: '/Article'
+        title: 'Reader',
+        items: [
+          {title:'ums_user', href: '/User/Reader/UmsUser'},
+          {title:'ums_role', href: '/User/Reader/UmsRight'},
+          {title:'ums_right', href: '/User/Reader/UmsRole'}
+        ]
       }
     ],
     dataItems: [
@@ -108,7 +159,6 @@ export default {
       {
         title: 'solr',
         items: [
-          {title: 'solr_article_head', href: '/Solr/SolrArticleHead'},
           {title: 'solr_article', href: '/Solr/SolrArticle'},
           {title: 'solr_character', href:'/Solr/SolrCharacter'},
           {title: 'solr_word', href: '/Solr/SolrWord'}

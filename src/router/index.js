@@ -2,8 +2,8 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 const Home = () => import('../views/Home')
+const Login = () => import('../views/Login')
 const About =() => import('../views/About.vue')
-const User = () => import("../views/User")
 const Article = () => import("../views/Article")
 
 const SmsArticleHead = () => import("../views/MySQL/SmsArticleHead")
@@ -17,6 +17,13 @@ const SolrArticle = () => import('../views/Solr/SolrArticle.vue')
 const SolrCharacter = () => import("../views/Solr/SolrCharacter")
 const SolrWord = () => import("../views/Solr/SolrWord")
 
+const EditorUmsUser = () => import('../views/User/Editor/EditorUmsUser')
+const EditorUmsRight = () => import('../views/User/Editor/EditorUmsRight')
+const EditorUmsRole = () => import('../views/User/Editor/EditorUmsRole')
+const ReaderUmsUser = () => import('../views/User/Reader/ReaderUmsUser')
+const ReaderUmsRight = () => import('../views/User/Reader/ReaderUmsRight')
+const ReaderUmsRole = () => import('../views/User/Reader/ReaderUmsRole')
+
 Vue.use(VueRouter)
 
 const routes = [
@@ -26,9 +33,43 @@ const routes = [
     component: Home
   },
   {
-    path: '/User',
-    name: 'User',
-    component: User
+    path: '/Login',
+    name: 'Login',
+    component: Login,
+    meta:{
+      notShowNav: true,
+      notRequireAuth: true
+    }
+  },
+  {
+    path: '/User/Editor/UmsUser',
+    name: 'EditorUmsUser',
+    component: EditorUmsUser
+  },
+  {
+    path: '/User/Editor/UmsRight',
+    name: 'EditorUmsRight',
+    component: EditorUmsRight
+  },
+  {
+    path: '/User/Editor/UmsRole',
+    name: 'EditorUmsRole',
+    component: EditorUmsRole
+  },
+  {
+    path: '/User/Reader/UmsUser',
+    name: 'ReaderUmsUser',
+    component: ReaderUmsUser
+  },
+  {
+    path: '/User/Reader/UmsRight',
+    name: 'ReaderUmsRight',
+    component: ReaderUmsRight
+  },
+  {
+    path: '/User/Reader/UmsRole',
+    name: 'ReaderUmsRole',
+    component: ReaderUmsRole
   },
   {
     path: '/Article',
@@ -87,7 +128,7 @@ const routes = [
 
 const router = new VueRouter({
   routes,
-  mode:'hash'
+  mode:'history'
 })
 
 export default router

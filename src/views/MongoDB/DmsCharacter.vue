@@ -75,6 +75,7 @@
         <v-row justify="center" style="margin-top: 20px" v-if="characters.length !==0">
           <v-col>
             <el-button type="danger" @click="deleteSelected()" >删除选中</el-button>
+            <el-button type="danger" v-if="diff" @click="deleteAll()" >全部删除</el-button>
           </v-col>
 
           <v-col>
@@ -118,14 +119,20 @@ export default {
     numFound: 0,
     currentPage: 1,
     pageSize: 10,
+
+    selectedCharacter:[],
+    diff: false
   }),
   methods: {
     async submit (){
+      this.loading = true
+      this.diff = false
       await this.find('character', this.select, this.query).then(result =>{
         this.characters = result
         this.numFound = result.length
         this.returnNumber = result.length
       })
+      this.loading = false
     },
     async findAll_ () {
       this.loading = true
@@ -142,9 +149,11 @@ export default {
       this.currentPage = val;
     },
     async check () {
+      this.diff = true
       let character = []
       let article = []
       await this.findAllArticle('character').then(result =>{
+        console.log(result)
         character = result
       })
 
@@ -170,6 +179,52 @@ export default {
       this.selectedCharacter = val
       console.log(this.selectedCharacter)
     },
+    deleteOneMethod (arr, strs) {
+      for (let i=0; i<strs.length;i++){
+        arr.splice(arr.indexOf(strs[i]), 1)
+      }
+      this.characters = arr
+    },
+    deleteSelected () {
+      let list = this.selectedCharacter
+      this.$confirm('此操作将永久删除这'+list.length+'个字, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.deleteManyMongo('character', list).then(result =>{
+          console.log(result)
+          if (result === 'success')
+            this.deleteOneMethod(this.characters, this.selectedCharacter)
+        })
+      }).catch((failResponse) => {
+        console.log(failResponse)
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    },
+    async deleteAll () {
+      let list = this.characters
+      this.$confirm('此操作将永久删除这'+list.length+'个字, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.deleteManyMongo('character', list).then(result =>{
+          console.log(result)
+          if (result === 'success')
+            this.characters = []
+        })
+      }).catch((failResponse) => {
+        console.log(failResponse)
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        });
+      });
+    }
   }
 }
 </script>

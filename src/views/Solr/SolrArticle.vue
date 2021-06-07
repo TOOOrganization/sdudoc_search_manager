@@ -183,10 +183,17 @@ export default {
     deleteMutiDialog: false,
     selectedArticle:[],
   }),
+  mounted() {
+    this.out()
+  },
   methods: {
+    out(){
+      console.log(this.$store.state.user)
+      console.log(this.$axios.defaults.headers)
+    },
     async submit () {
       this.loading = true
-      this.getSolrData('dms_article', this.defaultField, this.query, this.sort, this.start, this.rows).then(result =>{
+      await this.getSolrData('dms_article', this.defaultField, this.query, this.sort, this.start, this.rows).then(result =>{
         console.log(result)
         this.numFound = result.numFound
         this.articles = result.results

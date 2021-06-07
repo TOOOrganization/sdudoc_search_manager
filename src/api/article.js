@@ -8,7 +8,6 @@ import qs from "qs";
  * @param sort
  * @param start
  * @param rows
- * @param group
  * @param fields
  * @returns {Promise<string>}
  */
@@ -25,9 +24,9 @@ async function getSolrData(coreName, defaultField, query, sort, start, rows, fie
             fields:fields
         })
     ).then(resp => {
-        if (resp) {
-            console.log(resp.data)
-            result =  resp.data
+        if (resp.data.code === 200) {
+            console.log(resp.data.data)
+            result = JSON.parse(resp.data.data)
         }
     })
         .catch(failResponse => {
@@ -63,10 +62,12 @@ async function getSolrGroupData(coreName, defaultField, query, sort, start, rows
             fields:fields
         })
     ).then(resp => {
-        if (resp) {
-            console.log(resp.data[0].values)
-            for (let i=0; i<resp.data[0].values.length; i++){
-                result.push(resp.data[0].values[i].groupValue)
+        if (resp.data.code === 200) {
+            console.log(resp.data.data)
+            let data = JSON.parse(resp.data.data);
+            console.log(data)
+            for (let i=0; i<data[0].values.length; i++){
+                result.push(data[0].values[i].groupValue)
             }
         }
     })
@@ -86,12 +87,24 @@ async function findAll(connection){
     let result = ''
     await this.$axios.get('/'+connection+'/findAll'
     ).then(resp => {
-        if (resp) {
-            result = resp.data
+        if (resp.data.code === 200) {
+            console.log(resp.data.data)
+            result = JSON.parse(resp.data.data)
+        }else {
+            this.$message({
+                showClose: true,
+                message: resp.data.message,
+                type: 'error'
+            });
         }
     })
         .catch(failResponse => {
             console.log(failResponse)
+            this.$message({
+                showClose: true,
+                message: '查询失败，可能无权限',
+                type: 'error'
+            });
         })
     return result
 }
@@ -105,8 +118,8 @@ async function findAll_id(collection){
     let result = []
     await this.$axios.get('/'+collection+'/findAll_id'
     ).then(resp => {
-        if (resp) {
-            result = resp.data
+        if (resp.data.code === 200) {
+            result = JSON.parse(resp.data.data)
         }
     })
         .catch(failResponse => {
@@ -124,8 +137,8 @@ async function findAllArticle(collection){
     let result = []
     await this.$axios.get('/'+collection+'/findAllArticle'
     ).then(resp => {
-        if (resp) {
-            result = resp.data
+        if (resp.data.code === 200) {
+            result = JSON.parse(resp.data.data)
         }
     })
         .catch(failResponse => {
@@ -149,9 +162,8 @@ async function find(collection, field, keyword){
             keyword : keyword
         })
     ).then(resp => {
-        if (resp) {
-            console.log(resp.data)
-            result = resp.data
+        if (resp.data.code === 200) {
+            result = JSON.parse(resp.data.data)
         }
     })
         .catch(failResponse => {
@@ -168,9 +180,9 @@ async function findMany(collection, field, keyword){
             keyword : JSON.stringify(keyword)
         })
     ).then(resp => {
-        if (resp) {
-            console.log(resp.data)
-            result = resp.data
+        if (resp.data.code === 200) {
+            console.log(resp.data.data)
+            result = JSON.parse(resp.data.data)
         }
     })
         .catch(failResponse => {
@@ -249,7 +261,7 @@ async function deleteRowMongo(collection, row){
     let result = ''
     await this.$axios.post('/'+collection+'/delete',
         qs.stringify({
-            id:row.id
+            id:row._id
         })
     ).then(resp => {
         if (resp) {

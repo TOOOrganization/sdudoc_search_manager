@@ -77,6 +77,8 @@
         </el-table>
         <v-row justify="center" style="margin-top: 20px" v-if="words.length !==0">
           <v-col>
+            <el-button type="danger" @click="deleteSelected()" >删除选中</el-button>
+            <el-button type="danger" v-if="diff" @click="deleteAll()" >全部删除</el-button>
           </v-col>
 
           <v-col>
@@ -129,6 +131,7 @@ export default {
   methods:{
     async submit () {
       this.loading = true
+      this.diff = false
       this.getSolrData('dms_word', this.defaultField, this.query, this.sort, this.start, this.rows).then(result =>{
         console.log(result)
         this.numFound = result.numFound
@@ -150,7 +153,7 @@ export default {
         word = result
       })
 
-      await this.getSolrData('dms_word', '', '', '', '','','_id').then(result =>{
+      await this.getSolrData('dms_article', '', '', '', '','','_id').then(result =>{
         for (let i=0; i<result.results.length; i++)
           article.push(result.results[i]._id)
       })
@@ -178,8 +181,8 @@ export default {
       })
     },
     handleSelectionChange (val) {
-      this.selectedCharacter = val
-      console.log(this.selectedCharacter)
+      this.selectedWord = val
+      console.log(this.selectedWord)
     },
     deleteOneMethod (arr, strs) {
       for (let i=0; i<strs.length;i++){
@@ -190,8 +193,9 @@ export default {
     deleteSelected () {
       let _idList = []
       for (let i=0; i<this.selectedWord.length; i++){
-        _idList.push(this.selectedWord[i]._id)
+        _idList.push(this.selectedWord[i]._id[0])
       }
+      console.log(_idList)
       this.$confirm('此操作将永久删除这'+_idList.length+'个词, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

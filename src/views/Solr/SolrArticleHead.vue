@@ -96,7 +96,6 @@
 </template>
 
 <script>
-import qs from "qs";
 
 export default {
   name: "SolrArticleHead",
@@ -125,35 +124,25 @@ export default {
     pageSize: 10,
   }),
   methods:{
-    submit () {
+    async submit () {
       this.loading = true
-      this.$axios.post('/solr/query',
-          qs.stringify({
-            coreName:'sms_article_head',
-            defaultField:this.defaultField,
-            query:this.query,
-            sort:this.sort,
-            start:this.start,
-            rows:this.rows
-          })
-      ).then(resp => {
-        if (resp) {
-          console.log(resp.data)
-          this.articles = resp.data.results
-          this.numFound = resp.data.numFound
-          this.returnNumber = resp.data.results.length
-          console.log(this.articles)
-          this.loading = false
-        }
+      await this.getSolrData('sms_article_head', this.defaultField, this.query, this.sort, this.start, this.rows).then(result =>{
+        console.log(result)
+        this.numFound = result.numFound
+        this.articles = result.results
+        this.returnNumber = result.results.length
       })
-          .catch(failResponse => {
-            console.log(failResponse)
-          })
+      this.loading = false
     },
 
     handleCurrentChange(val) {
       console.log(`当前页: ${val}`);
       this.currentPage = val;
+    },
+
+    handleSelectionChange (val) {
+      this.selectedArticle = val
+      console.log(this.selectedArticle)
     },
 
   }
