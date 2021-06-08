@@ -162,6 +162,7 @@ export default {
 
     selectedArticle:[],
 
+    deleteOneDialog: false,
     deleteOne: {
       index: '',
       row:'',

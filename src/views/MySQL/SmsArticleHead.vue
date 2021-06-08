@@ -126,6 +126,7 @@ export default {
   methods: {
     async submit (){
       await this.find('article_head', this.select, this.query).then(result =>{
+        result = JSON.parse(result.data)
         this.articles = result
         this.numFound = result.length
         this.returnNumber = result.length
@@ -167,7 +168,8 @@ export default {
       console.log('difference', difference)
       this.diff_character = difference
 
-      await this.findMany('article_head', 'article', difference).then(result =>{
+      await this.findMany('article_head', 'aid', difference).then(result =>{
+        result = JSON.parse(result.data)
         this.articles = result
         this.numFound = result.length
         this.returnNumber = result.length

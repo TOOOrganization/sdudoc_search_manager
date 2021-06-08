@@ -12,6 +12,7 @@ Vue.prototype.qs=qs
 
 Vue.prototype.axios = axios
 axios.defaults.baseURL = 'http://localhost:8080'
+// axios.defaults.baseURL = 'http:/'
 Vue.prototype.$axios = axios
 
 // http request拦截器 添加一个请求拦截器
@@ -20,6 +21,7 @@ axios.interceptors.request.use(function (config) {
     let token = window.localStorage.getItem("token")
     if (token) {
         config.headers.zmw = 'zmw' + token;    //将token放到请求头发送给服务器
+        console.log(config.headers)
         //这里经常搭配token使用，将token值配置到tokenkey中，将tokenkey放在请求头中
         // config.headers['accessToken'] = Token;
     }

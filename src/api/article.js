@@ -25,7 +25,6 @@ async function getSolrData(coreName, defaultField, query, sort, start, rows, fie
         })
     ).then(resp => {
         if (resp.data.code === 200) {
-            console.log(resp.data.data)
             result = JSON.parse(resp.data.data)
         }
     })
@@ -63,9 +62,7 @@ async function getSolrGroupData(coreName, defaultField, query, sort, start, rows
         })
     ).then(resp => {
         if (resp.data.code === 200) {
-            console.log(resp.data.data)
             let data = JSON.parse(resp.data.data);
-            console.log(data)
             for (let i=0; i<data[0].values.length; i++){
                 result.push(data[0].values[i].groupValue)
             }
@@ -88,7 +85,6 @@ async function findAll(connection){
     await this.$axios.get('/'+connection+'/findAll'
     ).then(resp => {
         if (resp.data.code === 200) {
-            console.log(resp.data.data)
             result = JSON.parse(resp.data.data)
         }else {
             this.$message({
@@ -181,7 +177,6 @@ async function findMany(collection, field, keyword){
         })
     ).then(resp => {
         if (resp.data.code === 200) {
-            console.log(resp.data.data)
             result = JSON.parse(resp.data.data)
         }
     })

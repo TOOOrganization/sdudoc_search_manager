@@ -3,6 +3,7 @@
     <v-card
         class="mx-auto"
         max-width="344"
+        v-loading = "loading"
     >
       <v-card-title>
         <span class="text-h5">Login</span>
@@ -14,6 +15,7 @@
               <v-text-field
                   v-model="loginForm.username"
                   label="Username"
+                  v-on:keyup.enter="toLogin"
                   required
               ></v-text-field>
             </v-col>
@@ -22,6 +24,7 @@
                   v-model="loginForm.password"
                   label="Password"
                   type="password"
+                  v-on:keyup.enter="toLogin"
                   required
               ></v-text-field>
             </v-col>
@@ -45,6 +48,7 @@
 export default {
   name: "Login",
   data: () => ({
+    loading: false,
     loginForm:{
       username:'',
       password:''
@@ -62,12 +66,14 @@ export default {
       console.log('username', this.loginForm.username)
       console.log('password', this.loginForm.password)
       console.log(this.$axios.defaults.headers)
+      this.loading = true
       await this.login(this.loginForm.username, this.loginForm.password).then(result => {
         if (result.code === 200){
           that.$store.commit('login', JSON.parse(result.data))
           this.$router.push('/')
         }
       })
+      this.loading = false
 
     }
   }
