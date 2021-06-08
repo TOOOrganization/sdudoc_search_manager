@@ -26,10 +26,21 @@ async function getSolrData(coreName, defaultField, query, sort, start, rows, fie
     ).then(resp => {
         if (resp.data.code === 200) {
             result = JSON.parse(resp.data.data)
+            this.$message({
+                showClose: true,
+                type: 'success',
+                message: '查询成功!'
+            });
+
         }
     })
         .catch(failResponse => {
             console.log(failResponse)
+            this.$message({
+                showClose: true,
+                message: '查询失败，可能无权限',
+                type: 'error'
+            });
         })
 
     return result
@@ -70,6 +81,7 @@ async function getSolrGroupData(coreName, defaultField, query, sort, start, rows
     })
         .catch(failResponse => {
             console.log(failResponse)
+
         })
     console.log(result)
     return result
@@ -86,6 +98,11 @@ async function findAll(connection){
     ).then(resp => {
         if (resp.data.code === 200) {
             result = JSON.parse(resp.data.data)
+            this.$message({
+                showClose: true,
+                type: 'success',
+                message: '查询成功!'
+            });
         }else {
             this.$message({
                 showClose: true,
@@ -160,10 +177,20 @@ async function find(collection, field, keyword){
     ).then(resp => {
         if (resp.data.code === 200) {
             result = JSON.parse(resp.data.data)
+            this.$message({
+                showClose: true,
+                type: 'success',
+                message: '查询成功!'
+            });
         }
     })
         .catch(failResponse => {
             console.log(failResponse)
+            this.$message({
+                showClose: true,
+                message: '查询失败，可能无权限',
+                type: 'error'
+            });
         })
     return result
 }
@@ -178,10 +205,20 @@ async function findMany(collection, field, keyword){
     ).then(resp => {
         if (resp.data.code === 200) {
             result = JSON.parse(resp.data.data)
+            this.$message({
+                showClose: true,
+                type: 'success',
+                message: '查询成功!'
+            });
         }
     })
         .catch(failResponse => {
             console.log(failResponse)
+            this.$message({
+                showClose: true,
+                message: '查询失败，可能无权限',
+                type: 'error'
+            });
         })
     return result
 }
@@ -212,6 +249,11 @@ async function deleteRow(coreName, row){
         .catch(failResponse => {
             console.log(failResponse)
             result = 'fail'
+            this.$message({
+                showClose: true,
+                message: '删除失败，可能无权限',
+                type: 'error'
+            });
         })
     return result
 }
@@ -242,6 +284,11 @@ async function deleteMany(coreName, _idList){
         .catch(failResponse => {
             console.log(failResponse)
             result = 'fail'
+            this.$message({
+                showClose: true,
+                message: '删除失败，可能无权限',
+                type: 'error'
+            });
         })
     return result
 
@@ -270,6 +317,11 @@ async function deleteRowMongo(collection, row){
         .catch(failResponse => {
             console.log(failResponse)
             result = 'fail'
+            this.$message({
+                showClose: true,
+                message: '删除失败，可能无权限',
+                type: 'error'
+            });
         })
     return result
 }
@@ -285,6 +337,7 @@ async function deleteManyMongo(collection, entities){
         if (resp) {
             result = 'success'
             this.$message({
+                showClose: true,
                 type: 'success',
                 message: '删除成功!'
             });
@@ -293,6 +346,11 @@ async function deleteManyMongo(collection, entities){
         .catch(failResponse => {
             console.log(failResponse)
             result = 'fail'
+            this.$message({
+                showClose: true,
+                message: '删除失败，可能无权限',
+                type: 'error'
+            });
         })
     return result
 
